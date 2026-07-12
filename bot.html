@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connect WhatsApp Bot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL,GRAD@400,1,0&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e0f8e9 0%, #ffffff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .glass-card {
+            background: #ffffff;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.05);
+            border-radius: 1.5rem;
+            width: 100%;
+            max-width: 440px;
+            padding: 2.5rem 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .step {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .step.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .pairing-char {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.5rem;
+            height: 3.5rem;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin: 0 0.2rem;
+        }
+
+        .spinner {
+            border: 3px solid rgba(22, 163, 74, 0.1);
+            border-left-color: #16a34a;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-checkmark {
+            width: 80px;
+            height: 80px;
+            background-color: #16a34a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            color: white;
+            box-shadow: 0 0 0 15px rgba(22, 163, 74, 0.1);
+        }
+        /* intl-tel-input overrides to match Tailwind style */
+        .iti { width: 100%; display: block; }
+        .iti__flag-container { padding: 2px; }
+        .iti__selected-flag { border-radius: 6px 0 0 6px; background-color: #f9fafb; padding: 0 12px; }
+        .iti__selected-flag:hover { background-color: #f3f4f6; }
+    </style>
+</head>
+<body class="p-4 relative overflow-hidden">
+
+    <!-- Decorative elements -->
+    <div class="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-[#bbf7d0]/30 to-transparent -z-10"></div>
+    <div class="absolute -top-[20%] -left-[10%] w-[50%] h-[50%] rounded-full bg-green-200/30 blur-[100px] -z-10"></div>
+    <div class="absolute bottom-[10%] -right-[10%] w-[40%] h-[40%] rounded-full bg-emerald-200/20 blur-[80px] -z-10"></div>
+
+    <div class="glass-card">
+        <!-- Common Header -->
+        <div class="text-center mb-8">
+            <div class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span class="material-symbols-outlined text-2xl">chat</span>
+            </div>
+            <h2 class="text-lg font-bold text-gray-800 tracking-tight">Kaveez Bot Automator</h2>
+            <p class="text-xs text-gray-500 uppercase tracking-widest mt-1 font-semibold">Connect Your Account</p>
+        </div>
+
+        <!-- STEP 1: Phone Number Input -->
+        <div id="step-1" class="step active">
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Get Started</h3>
+                <p class="text-gray-500 text-sm">Connect your WhatsApp number to start automating.</p>
+            </div>
+
+            <form id="connect-form" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">WhatsApp Phone Number</label>
+                    <div class="border border-gray-300 rounded-lg focus-within:ring-2 focus-within:ring-green-500 focus-within:border-green-500 transition-all">
+                        <input type="tel" id="phone-number" placeholder="077XXXXXXX" class="w-full px-4 py-3 text-gray-900 placeholder-gray-400 focus:outline-none rounded-lg" required>
+                    </div>
+                </div>
+
+                <p class="text-[11px] text-gray-400 text-center">We'll generate a secure pairing code to link your account.</p>
+
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3.5 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-lg shadow-green-600/20">
+                    Get Pairing Code <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                </button>
+            </form>
+
+            <div class="mt-8 text-center border-t border-gray-100 pt-6">
+                <div class="flex items-center justify-center gap-1 text-xs text-gray-500 font-medium hover:text-green-600 cursor-pointer transition-colors">
+                    <span class="material-symbols-outlined text-[14px]">help</span>
+                    Need help connecting?
+                </div>
+            </div>
+            
+            <div class="mt-6 flex items-center justify-center gap-1 text-[10px] text-gray-400 uppercase tracking-widest">
+                <span class="material-symbols-outlined text-[12px]">lock</span>
+                End-to-end encrypted connection
+            </div>
+        </div>
+
+        <!-- STEP 2: Display Pairing Code -->
+        <div id="step-2" class="step">
+            <div class="text-center mb-6">
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Link with WhatsApp</h3>
+                <p class="text-gray-500 text-sm">We've generated a pairing code for <span id="display-number" class="font-semibold text-gray-900"></span></p>
+            </div>
+
+            <div class="bg-gray-50 rounded-xl p-6 mb-6 text-center border border-gray-100">
+                <p class="text-xs text-gray-600 font-medium mb-4">Enter this code in WhatsApp</p>
+                <div class="flex justify-center items-center mb-4" id="code-container">
+                    <!-- Code digits will be injected here -->
+                </div>
+                
+                <div class="bg-blue-50 text-blue-800 text-xs text-left p-3 rounded-lg flex items-start gap-2 mt-4">
+                    <span class="material-symbols-outlined text-[16px] mt-0.5">info</span>
+                    <p>Open WhatsApp > Linked Devices > Link a Device > <strong>Link with phone number instead</strong></p>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-center gap-3 text-sm text-gray-600 font-medium mb-6">
+                <div class="spinner"></div>
+                Waiting for connection...
+            </div>
+
+            <button type="button" id="btn-cancel" class="w-full bg-white hover:bg-gray-50 text-gray-700 font-semibold py-3 px-4 rounded-lg border border-gray-200 transition-colors">
+                Cancel
+            </button>
+        </div>
+
+        <!-- STEP 3: Success -->
+        <div id="step-3" class="step">
+            <div class="text-center py-8">
+                <div class="success-checkmark mb-8">
+                    <span class="material-symbols-outlined text-4xl">check</span>
+                </div>
+                
+                <h3 class="text-2xl font-bold text-gray-900 mb-4">Successfully Connected!</h3>
+                <p class="text-green-700 bg-green-50 py-3 px-4 rounded-lg font-medium text-sm md:text-base mb-8 shadow-sm border border-green-100">
+                    සාර්ථකව bot ඔබගේ whatsapp එක සමග සම්බන්ධ විය.
+                </p>
+
+                <button type="button" onclick="window.close()" class="w-full bg-gray-900 hover:bg-black text-white font-semibold py-3.5 px-4 rounded-lg transition-colors">
+                    Close Window
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Expired/Error Modal -->
+    <div id="error-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <div id="error-modal-content" class="bg-white rounded-2xl shadow-2xl w-[90%] max-w-sm p-6 transform scale-95 transition-all duration-300 text-center border border-red-100">
+            <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-100 shadow-inner">
+                <span class="material-symbols-outlined text-red-500 text-3xl">error</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">කෝඩ් එක කල් ඉකුත් විය!</h3>
+            <p class="text-gray-500 text-sm mb-6 leading-relaxed">
+                ඔබ Pairing Code එක ඇතුලත් කිරීමට ප්‍රමාද වූ නිසා එය කල් ඉකුත් වී ඇත (Expired). කරුණාකර නැවතත් අලුත් Code එකක් ලබා ගන්න.
+            </p>
+            <button type="button" id="btn-close-modal" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-xl transition-all shadow-md shadow-red-200 active:scale-95">
+                තේරුණා (Try Again)
+            </button>
+        </div>
+    </div>
+
+    <!-- Expired/Error Modal -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const step3 = document.getElementById('step-3');
+            
+            const form = document.getElementById('connect-form');
+            const phoneInput = document.getElementById('phone-number');
+            const displayNumber = document.getElementById('display-number');
+            const codeContainer = document.getElementById('code-container');
+            const btnCancel = document.getElementById('btn-cancel');
+            const successText = document.querySelector('#step-3 p');
+
+            let statusInterval;
+            const API_URL = 'https://wpbot.kaveesha.top/api'; // Hardcoded to Cloudflare tunnel domain
+            
+            // Switch between steps
+            function showStep(stepElement) {
+                [step1, step2, step3].forEach(el => {
+                    el.classList.remove('active');
+                    setTimeout(() => el.style.display = 'none', 300); // Hide after fade out
+                });
+
+                setTimeout(() => {
+                    stepElement.style.display = 'block';
+                    setTimeout(() => stepElement.classList.add('active'), 10);
+                }, 300);
+            }
+
+            // Handle form submission
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                let number = phoneInput.value.trim();
+                if (!number) return;
+                
+                // Format the number: remove spaces/dashes and handle '0' prefix
+                number = number.replace(/[\s-]/g, '');
+                if (number.startsWith('0')) {
+                    number = '94' + number.substring(1);
+                } else if (!number.startsWith('+') && number.length === 9) {
+                    number = '94' + number;
+                }
+                
+                // Ensure it has a + prefix for the API if needed, or just let API handle it
+                if (!number.startsWith('+')) {
+                    number = '+' + number;
+                }
+
+                // Disable button and show loading text
+                const btn = form.querySelector('button');
+                const originalText = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = `<div class="spinner border-white border-l-transparent w-5 h-5 mr-2"></div> Requesting...`;
+
+                try {
+                    const response = await fetch(`${API_URL}/pair`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ phoneNumber: number })
+                    });
+                    
+                    const data = await response.json();
+
+                    if (data.error) {
+                        alert(`Error: ${data.error}`);
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                        return;
+                    }
+
+                    // Set number in step 2 (it already includes the '+' from iti.getNumber)
+                    displayNumber.textContent = number;
+
+                    // Display code
+                    const code = data.code;
+                    codeContainer.innerHTML = '';
+                    
+                    for (let i = 0; i < 4; i++) {
+                        codeContainer.innerHTML += `<span class="pairing-char">${code[i]}</span>`;
+                    }
+                    codeContainer.innerHTML += `<span class="text-gray-400 font-bold mx-1">-</span>`;
+                    for (let i = 4; i < 8; i++) {
+                        codeContainer.innerHTML += `<span class="pairing-char">${code[i]}</span>`;
+                    }
+
+                    showStep(step2);
+
+                    // Poll for status
+                    statusInterval = setInterval(async () => {
+                        try {
+                            const statusRes = await fetch(`${API_URL}/status/${data.sessionId}`);
+                            const statusData = await statusRes.json();
+                            
+                            if (statusData.status === 'connected') {
+                                clearInterval(statusInterval);
+                                successText.innerHTML = `සාර්ථකව <b>${statusData.username}</b> ගේ whatsapp එක bot සමග සම්බන්ධ විය.`;
+                                showStep(step3);
+                            } else if (statusData.status === 'expired' || statusData.status === 'disconnected') {
+                                clearInterval(statusInterval);
+                                showExpiredModal();
+                            }
+                        } catch (err) {
+                            console.error("Polling error:", err);
+                        }
+                    }, 3000); // Check every 3 seconds
+
+                } catch (err) {
+                    console.error(err);
+                    alert('Something went wrong. Please check if the server is running.');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+            });
+
+            // Modal Logic
+            const errorModal = document.getElementById('error-modal');
+            const errorModalContent = document.getElementById('error-modal-content');
+            const btnCloseModal = document.getElementById('btn-close-modal');
+
+            function showExpiredModal() {
+                errorModal.classList.remove('hidden');
+                // Small delay to allow display:block to apply before animating opacity
+                setTimeout(() => {
+                    errorModal.classList.remove('opacity-0');
+                    errorModalContent.classList.remove('scale-95');
+                    errorModalContent.classList.add('scale-100');
+                }, 10);
+            }
+
+            btnCloseModal.addEventListener('click', () => {
+                // Animate out
+                errorModal.classList.add('opacity-0');
+                errorModalContent.classList.remove('scale-100');
+                errorModalContent.classList.add('scale-95');
+                
+                setTimeout(() => {
+                    errorModal.classList.add('hidden');
+                    // Go back to step 1
+                    const btn = form.querySelector('button');
+                    btn.disabled = false;
+                    btn.innerHTML = 'Get Pairing Code <span class="material-symbols-outlined text-sm">arrow_forward</span>';
+                    showStep(step1);
+                }, 300);
+            });
+
+            // Handle cancel
+            btnCancel.addEventListener('click', () => {
+                clearInterval(statusInterval);
+                showStep(step1);
+            });
+        });
+    </script>
+</body>
+</html>
