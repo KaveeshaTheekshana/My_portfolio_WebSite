@@ -52,7 +52,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(to bottom, rgba(5, 5, 5, 0.8), rgba(5, 5, 5, 0.3), #0a0a0a);
+            background: linear-gradient(to bottom, rgba(5, 5, 5, 0.5) 0%, rgba(5, 5, 5, 0.1) 30%, rgba(10, 10, 10, 0.95) 100%);
             z-index: -1;
             pointer-events: none;
         }
@@ -264,34 +264,34 @@
 
         <!-- Hero Section -->
         <section id="home"
-            class="relative min-h-[100dvh] flex items-center justify-center pt-32 pb-16 px-4 overflow-hidden">
+            class="relative min-h-[100dvh] flex items-end md:items-center justify-center pt-32 pb-12 md:pb-16 px-4 overflow-hidden">
             <!-- Background Video for Hero -->
             <video id="bg-video" src="kaveesha.mp4" autoplay loop muted playsinline preload="auto"></video>
             <div class="video-overlay"></div>
 
-            <div class="relative z-10 text-left w-full px-6 md:px-16 max-w-7xl reveal active">
+            <div class="relative z-10 text-left w-full px-4 md:px-16 max-w-7xl reveal active mb-4 md:mb-0">
                 <div
-                    class="mb-6 inline-block border border-primary/30 px-3 py-1.5 md:px-4 md:py-2 bg-primary/5 rounded">
-                    <span class="font-technical-sm text-xs md:text-sm text-primary terminal-cursor"
+                    class="mb-4 md:mb-6 inline-block border border-primary/30 px-3 py-1.5 md:px-4 md:py-2 bg-primary/5 rounded backdrop-blur-sm shadow-[0_0_10px_rgba(0,255,0,0.1)]">
+                    <span class="font-technical-sm text-[10px] md:text-sm text-primary terminal-cursor"
                         id="status-text">STATUS:
                         LOOKING FOR NEW OPPORTUNITIES</span>
                 </div>
                 <h1
-                    class="font-headline-xl text-5xl md:text-7xl text-white mb-6 md:mb-8 leading-tight font-extrabold drop-shadow-[0_0_15px_rgba(0,255,0,0.4)] tracking-tight">
+                    class="font-headline-xl text-[2.5rem] leading-[1.1] md:text-7xl text-white mb-4 md:mb-8 md:leading-tight font-extrabold drop-shadow-[0_0_15px_rgba(0,255,0,0.4)] tracking-tight text-shadow-sm">
                     KAVEEZ<br />
-                    <span class="text-primary text-2xl md:text-5xl mt-2 block">FULL STACK DEVELOPER</span>
+                    <span class="text-primary text-xl md:text-5xl mt-1 md:mt-2 block drop-shadow-[0_0_10px_rgba(0,255,0,0.2)]">FULL STACK DEVELOPER</span>
                 </h1>
                 <div id="react-scramble-root"
-                    class="font-body-lg text-base md:text-lg text-on-surface-variant max-w-2xl mb-10 min-h-[80px]">
+                    class="font-body-lg text-sm md:text-lg text-on-surface-variant max-w-2xl mb-6 md:mb-10 min-h-[40px] md:min-h-[80px] drop-shadow-md">
                 </div>
                 <div
-                    class="flex flex-col md:flex-row items-start md:items-center justify-start gap-4 md:gap-6 w-full max-w-sm md:max-w-none">
+                    class="flex flex-col md:flex-row items-start md:items-center justify-start gap-3 md:gap-6 w-full max-w-sm md:max-w-none">
                     <button id="btn-execute-portfolio"
-                        class="w-full md:w-auto px-6 py-4 md:px-8 bg-primary text-black font-technical-sm text-sm uppercase font-bold tracking-widest hover:shadow-[0_0_30px_rgba(0,255,0,0.6)] transition-all">
+                        class="w-full md:w-auto px-4 py-3 md:px-8 md:py-4 bg-primary text-black font-technical-sm text-xs md:text-sm uppercase font-bold tracking-widest hover:shadow-[0_0_30px_rgba(0,255,0,0.6)] transition-all rounded-sm">
                         Execute Portfolio.exe
                     </button>
                     <a href="https://github.com" target="_blank"
-                        class="w-full md:w-auto px-6 py-4 md:px-8 border border-secondary text-secondary font-technical-sm text-sm uppercase font-bold tracking-widest hover:bg-secondary/10 transition-all shadow-[0_0_15px_rgba(0,219,231,0.1)]">
+                        class="w-full md:w-auto px-4 py-3 md:px-8 md:py-4 border border-secondary text-secondary font-technical-sm text-xs md:text-sm uppercase font-bold tracking-widest hover:bg-secondary/10 transition-all shadow-[0_0_15px_rgba(0,219,231,0.1)] text-center flex items-center justify-center rounded-sm backdrop-blur-sm">
                         View GitHub
                     </a>
                 </div>
@@ -400,7 +400,7 @@
 
                 <!-- Call to action button -->
                 <div class="reveal">
-                    <a href="#"
+                    <a href="bot.html" target="_blank"
                         class="group relative inline-flex items-center justify-center gap-2 md:gap-4 px-6 py-4 md:px-10 md:py-5 bg-[#25D366] text-black font-technical-sm text-sm md:text-base uppercase font-extrabold tracking-widest rounded-full overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(37,211,102,0.6)] active:scale-95 w-full max-w-sm md:w-auto">
                         <!-- Shimmer effect -->
                         <div class="absolute inset-0 -translate-x-[150%] bg-white/40 skew-x-[25deg] animate-shimmer">
