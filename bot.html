@@ -108,7 +108,15 @@
     </style>
 </head>
 
-<body class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+<body class="min-h-screen flex items-center justify-center p-4 relative overflow-x-hidden overflow-y-auto">
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 transform -translate-y-full opacity-0 transition-all duration-300">
+        <div class="glass-panel px-4 py-3 rounded-xl flex items-center shadow-lg border border-white/10 bg-surface/90">
+            <span id="toast-icon" class="material-symbols-outlined text-red-500 mr-2 text-xl">error</span>
+            <span id="toast-msg" class="text-sm font-medium text-white">Message</span>
+        </div>
+    </div>
+
     <div class="glow top-0 left-1/4"></div>
     <div class="glow bottom-0 right-1/4" style="background: rgba(59, 130, 246, 0.1)"></div>
 
@@ -181,6 +189,9 @@
                     <div class="bg-surface2 border border-white/5 rounded-xl p-6 mb-6">
                         <div class="flex justify-center items-center mb-4" id="code-container">
                         </div>
+                        <button type="button" id="btn-copy-code" class="mb-4 bg-accent/10 border border-accent/20 hover:bg-accent/20 text-accent font-medium py-2 px-4 rounded-lg text-sm transition-colors mx-auto flex items-center justify-center gap-2 hidden">
+                            <span class="material-symbols-outlined text-[16px]">content_copy</span> Copy Code
+                        </button>
 
                         <div
                             class="text-left text-xs text-gray-400 bg-dark/50 p-3 rounded-lg flex gap-2 border border-white/5">
@@ -286,6 +297,15 @@
     </div>
 
     <script>
+        // Anti-Scraping, DevTools & Copy Blocker
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => {
+            // Block F12, Ctrl+Shift+I/C/J, Ctrl+U, Ctrl+C
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) || (e.ctrlKey && e.key === 'U') || (e.ctrlKey && (e.key === 'c' || e.key === 'C'))) {
+                e.preventDefault();
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', () => {
             // Tab Logic
             const tabs = document.querySelectorAll('.nav-tab');
@@ -301,27 +321,72 @@
                 });
             });
 
+            // Toast logic
+            const toastEl = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+
+            function showToast(message, type = 'error') {
+                toastMsg.innerText = message;
+                toastIcon.innerText = type === 'error' ? 'error' : 'check_circle';
+                toastIcon.className = type === 'error' ? 'material-symbols-outlined text-red-500 mr-2 text-xl' : 'material-symbols-outlined text-green-500 mr-2 text-xl';
+                toastEl.classList.remove('-translate-y-full', 'opacity-0');
+                
+                setTimeout(() => {
+                    toastEl.classList.add('-translate-y-full', 'opacity-0');
+                }, 4000);
+            }
+
+            // Obfuscated API URL to prevent simple scraping
+            const _0x1a = atob("aHR0cHM6Ly93cGJvdC5rYXZlZXNoYS50b3AvYXBp");
+            const API_URL = _0x1a;
+
+            // Secure API Request Wrapper
+            function secureFetch(url, options = {}) {
+                const t = Date.now().toString();
+                const s = "KAVEEZ_SECURE_API_99";
+                const token = btoa(t + "_" + s).split('').reverse().join('');
+                
+                const headers = options.headers || {};
+                headers['x-bot-time'] = t;
+                headers['x-bot-token'] = token;
+                options.headers = headers;
+                
+                return fetch(url, options);
+            }
+
+            // Advanced Debugger Trap
+            setInterval(() => {
+                const before = new Date().getTime();
+                debugger;
+                const after = new Date().getTime();
+                if (after - before > 100) {
+                    document.body.innerHTML = "<div style='color:red; text-align:center; padding:50px; font-family:sans-serif;'><h3>Security Violation Detected</h3><p>Please close DevTools to use this site.</p></div>";
+                }
+            }, 1000);
+
             // Referral URL Param Check
             const urlParams = new URLSearchParams(window.location.search);
             const referrerParam = urlParams.get('ref');
             let finalReferrer = null;
             if (referrerParam) {
-                if (referrerParam.startsWith('Kaveez-WhatsappBot-')) {
-                    let b64 = referrerParam.replace('Kaveez-WhatsappBot-', '');
-                    while (b64.length % 4 !== 0) b64 += '=';
-                    try {
-                        const reversed = atob(b64);
-                        finalReferrer = reversed.split('').reverse().join('').replace(/[^0-9]/g, '');
-                    } catch (e) { finalReferrer = null; }
-                } else {
-                    finalReferrer = referrerParam.replace(/[^0-9]/g, '');
-                }
-
-                if (finalReferrer && finalReferrer.length >= 9) {
-                    document.getElementById('referrer-alert').classList.remove('hidden');
-                } else {
-                    finalReferrer = null; // invalid
-                }
+                // Validate with backend
+                secureFetch(`${API_URL}/referral/validate/${referrerParam}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.valid) {
+                            // Extract just for local keeping if needed, backend actually handles the b64 decode inside /pair now,
+                            // but our frontend POSTs it back exactly as it was.
+                            finalReferrer = referrerParam;
+                            document.getElementById('referrer-alert').classList.remove('hidden');
+                        } else {
+                            if (data.expired) {
+                                showToast(data.message, 'error');
+                            }
+                            finalReferrer = null;
+                        }
+                    })
+                    .catch(() => { finalReferrer = null; });
             }
 
             // Connection Logic
@@ -336,7 +401,6 @@
             const successText = document.getElementById('success-text');
 
             let statusInterval;
-            const API_URL = 'https://wpbot.kaveesha.top/api'; // Update this to your real domain
 
             function showStep(stepElement) {
                 [step1, step2, step3].forEach(el => {
@@ -350,6 +414,7 @@
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 let number = phoneInput.value.trim().replace(/[\s-+]/g, '');
+                if (number.startsWith('0')) number = '94' + number.substring(1);
                 if (!number) return;
 
                 const btn = form.querySelector('button');
@@ -361,7 +426,7 @@
                     const payload = { phoneNumber: number };
                     if (finalReferrer) payload.referrer = finalReferrer;
 
-                    const response = await fetch(`${API_URL}/pair`, {
+                    const response = await secureFetch(`${API_URL}/pair`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
@@ -383,11 +448,19 @@
                         codeContainer.innerHTML += `<span class="pairing-char">${code[i]}</span>`;
                     }
 
+                    const btnCopyCode = document.getElementById('btn-copy-code');
+                    btnCopyCode.classList.remove('hidden');
+                    btnCopyCode.onclick = () => {
+                        navigator.clipboard.writeText(code).then(() => {
+                            showToast('Pairing code copied!', 'success');
+                        });
+                    };
+
                     showStep(step2);
 
                     statusInterval = setInterval(async () => {
                         try {
-                            const statusRes = await fetch(`${API_URL}/status/${data.sessionId}`);
+                            const statusRes = await secureFetch(`${API_URL}/status/${data.sessionId}`);
                             const statusData = await statusRes.json();
 
                             if (statusData.status === 'connected') {
@@ -401,7 +474,7 @@
                         } catch (err) { }
                     }, 3000);
                 } catch (err) {
-                    alert('Error: ' + err.message);
+                    showToast('Error: ' + err.message, 'error');
                     btn.disabled = false;
                     btn.innerHTML = originalText;
                 }
@@ -410,26 +483,27 @@
             // Referral Link Generation
             const btnGenerateRef = document.getElementById('btn-generate-ref');
             btnGenerateRef.addEventListener('click', async () => {
-                const num = document.getElementById('ref-my-number').value.trim().replace(/[\s-+]/g, '');
-                if (!num || num.length < 9) return alert('Enter a valid WhatsApp number');
+                let num = document.getElementById('ref-my-number').value.trim().replace(/[\s-+]/g, '');
+                if (num.startsWith('0')) num = '94' + num.substring(1);
+                if (!num || num.length < 9) return showToast('Enter a valid WhatsApp number', 'error');
 
                 const btnOriginal = btnGenerateRef.innerHTML;
                 btnGenerateRef.innerHTML = `<div class="spinner border-dark border-l-transparent w-4 h-4 mr-2 inline-block align-middle"></div> Checking...`;
                 btnGenerateRef.disabled = true;
 
                 try {
-                    const res = await fetch(`${API_URL}/referral/${num}`);
+                    const res = await secureFetch(`${API_URL}/referral/${num}`);
                     const data = await res.json();
                     
                     if (data.error) {
-                        alert(data.error);
+                        showToast(data.error, 'error');
                     } else if (data.linkCode) {
                         const link = `${window.location.origin}${window.location.pathname}?ref=${data.linkCode}`;
                         document.getElementById('ref-link-output').value = link;
                         document.getElementById('ref-result').classList.remove('hidden');
                     }
                 } catch(e) {
-                    alert('Error connecting to server to generate link.');
+                    showToast('Error connecting to server to generate link.', 'error');
                 }
                 
                 btnGenerateRef.innerHTML = btnOriginal;
