@@ -409,16 +409,31 @@
 
             // Referral Link Generation
             const btnGenerateRef = document.getElementById('btn-generate-ref');
-            btnGenerateRef.addEventListener('click', () => {
+            btnGenerateRef.addEventListener('click', async () => {
                 const num = document.getElementById('ref-my-number').value.trim().replace(/[\s-+]/g, '');
                 if (!num || num.length < 9) return alert('Enter a valid WhatsApp number');
 
-                const reversed = num.split('').reverse().join('');
-                const encoded = 'Kaveez-WhatsappBot-' + btoa(reversed).replace(/=/g, '');
+                const btnOriginal = btnGenerateRef.innerHTML;
+                btnGenerateRef.innerHTML = `<div class="spinner border-dark border-l-transparent w-4 h-4 mr-2 inline-block align-middle"></div> Checking...`;
+                btnGenerateRef.disabled = true;
 
-                const link = `${window.location.origin}${window.location.pathname}?ref=${encoded}`;
-                document.getElementById('ref-link-output').value = link;
-                document.getElementById('ref-result').classList.remove('hidden');
+                try {
+                    const res = await fetch(`${API_URL}/referral/${num}`);
+                    const data = await res.json();
+                    
+                    if (data.error) {
+                        alert(data.error);
+                    } else if (data.linkCode) {
+                        const link = `${window.location.origin}${window.location.pathname}?ref=${data.linkCode}`;
+                        document.getElementById('ref-link-output').value = link;
+                        document.getElementById('ref-result').classList.remove('hidden');
+                    }
+                } catch(e) {
+                    alert('Error connecting to server to generate link.');
+                }
+                
+                btnGenerateRef.innerHTML = btnOriginal;
+                btnGenerateRef.disabled = false;
             });
 
             document.getElementById('btn-copy-ref').addEventListener('click', () => {
