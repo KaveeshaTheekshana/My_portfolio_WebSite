@@ -121,6 +121,35 @@
             z-index: -2;
             opacity: 0.3;
             mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        /* Mobile Performance Optimizations */
+        @media (max-width: 768px) {
+            /* KEEP the video, but optimize everything else */
+            .glass-panel {
+                /* Remove blur completely on mobile for performance */
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                /* Use a more solid background to compensate for lack of blur */
+                background: linear-gradient(145deg, rgba(23, 23, 23, 0.95), rgba(15, 15, 15, 0.98));
+                box-shadow: none; /* Remove heavy shadows */
+                border: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            .glow-blob {
+                display: none; /* Hide glow blobs on mobile */
+            }
+            /* Disable float animations on mobile */
+            .float-1, .float-2 {
+                animation: none;
+                transform: none;
+            }
+            /* Simplify navbar background on mobile */
+            nav {
+                backdrop-filter: none;
+                -webkit-backdrop-filter: none;
+                background-color: rgba(0, 0, 0, 0.95);
+            }
         }
 
         /* floating icons */
@@ -133,14 +162,11 @@
         }
 
         @keyframes float {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: translateY(0) rotate(0deg);
             }
-
             50% {
-                transform: translateY(-20px) rotate(5deg);
+                transform: translateY(-15px) rotate(3deg);
             }
         }
     </style>
@@ -329,7 +355,8 @@
                 class="relative w-full rounded-3xl overflow-hidden reveal border border-white/10 group min-h-[500px] flex flex-col justify-end p-8 md:p-16">
                 <!-- BG Image -->
                 <div
-                    class="absolute inset-0 bg-[url('movie-section.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-105">
+                    class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+                    style="background-image: url('./movie-section.jpg');">
                 </div>
                 <div class="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent"></div>
                 <div class="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent"></div>
